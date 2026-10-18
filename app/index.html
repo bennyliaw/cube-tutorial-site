@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CFOP · the easy way</title>
+<style>
+:root { --bg: #070b18; --panel: #ffffff0b; --line: #ffffff1c; --text: #E6EAF5; --dim: #8C96B8; --y: #FFD60A; --g: #16C172; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: radial-gradient(1200px 700px at 85% -10%, #3b1d6e66, transparent 60%), radial-gradient(900px 600px at -10% 110%, #0b5c7a55, transparent 60%), var(--bg); color: var(--text); font: 14px/1.4 -apple-system, "Helvetica Neue", Arial, sans-serif; }
+body { display: grid; grid-template-columns: 320px 1fr; grid-template-rows: 56px 1fr auto; height: 100vh; }
+header { grid-column: 1 / 3; display: flex; align-items: center; gap: 16px; padding: 0 18px; border-bottom: 1px solid var(--line); }
+header h1 { margin: 0; font-size: 20px; background: linear-gradient(90deg,#FFD60A,#FF8A1F 35%,#F0334B 60%,#3A7BFF); -webkit-background-clip: text; color: transparent; }
+header .tabs { margin-left: auto; display: flex; gap: 6px; }
+button { font: inherit; color: var(--text); background: #ffffff10; border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+button:hover { border-color: #FFD60A88; }
+button.on { background: #FFD60A22; border-color: var(--y); color: var(--y); }
+aside { overflow-y: auto; border-right: 1px solid var(--line); padding: 12px; }
+aside h3 { margin: 14px 4px 6px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--y); }
+.item { padding: 7px 10px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; }
+.item:hover { background: var(--panel); }
+.item.on { background: #FFD60A18; border-color: #FFD60A66; }
+.item small { display: block; color: var(--dim); }
+.item .mv { font-family: "SF Mono", Menlo, monospace; font-size: 12px; color: var(--text); opacity: .8; }
+main { position: relative; min-height: 0; }
+#gl { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+#gl:active { cursor: grabbing; }
+header a { color: var(--y); }
+#info { position: absolute; left: 20px; top: 16px; right: 20px; pointer-events: none; }
+#info .stage { color: var(--y); font-weight: 600; font-size: 13px; }
+#info .title { font-size: 26px; font-weight: 700; }
+#info .say { color: #C9D2EA; max-width: 640px; }
+#info .count { color: var(--y); font: 600 15px "SF Mono", Menlo, monospace; margin-top: 6px; }
+footer { grid-column: 2 / 3; padding: 10px 18px 14px; border-top: 1px solid var(--line); }
+#strip { font: 700 20px "SF Mono", Menlo, monospace; text-align: center; min-height: 30px; margin-bottom: 8px; }
+#strip span { padding: 1px 5px; border-radius: 6px; }
+#strip .done { color: #6B7598; } #strip .now { color: var(--y); background: #FFD60A22; }
+.controls { display: flex; align-items: center; gap: 8px; }
+#scrub { flex: 1; accent-color: #FFD60A; }
+textarea { width: 100%; height: 64px; font: 13px "SF Mono", Menlo, monospace; color: var(--text); background: #00000040; border: 1px solid var(--line); border-radius: 8px; padding: 8px; resize: vertical; }
+.row { display: flex; gap: 6px; margin: 8px 0; flex-wrap: wrap; }
+.err { color: #F0334B; }
+.hint { color: var(--dim); font-size: 12px; margin: 4px; }
+</style></head>
+<body>
+<header><h1>CFOP · the easy way</h1><span class="hint"><a href="../dist/one-pager.html">cheat sheet with videos</a> · <a href="../dist/one-pager.pdf" download>PDF</a> · drag the cube to look around (double-click resets) · space = play/pause · ← → = step · methods: J Perm, Caleb Miller</span>
+  <div class="tabs"><button id="tabCases" class="on">Cases</button><button id="tabSolve">Solve any cube</button></div></header>
+<aside id="side"></aside>
+<main><canvas id="gl"></canvas><div id="info"><div class="stage"></div><div class="title"></div><div class="say"></div><div class="count"></div></div></main>
+<footer><div id="strip"></div>
+  <div class="controls">
+    <button id="prev" title="previous step (←)">⏮</button><button id="play" title="play / pause (space)">▶</button><button id="next" title="next step (→)">⏭</button><button id="sound" title="turn sound on / off">🔊</button>
+    <input id="scrub" type="range" min="0" max="100" value="0">
+    <label class="hint">speed <select id="speed"><option>0.5</option><option selected>1</option><option>2</option><option>4</option></select></label>
+  </div></footer>
+<script type="module" src="app.js"></script>
+</body></html>
