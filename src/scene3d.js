@@ -18,7 +18,9 @@ function roundedRect(w, r) {
   return new THREE.ShapeGeometry(s, 6);
 }
 
-export function createView(canvas, { width, height, camera = [5.6, 5.0, 7.2], fov = 28, target = [0, 0.15, 0] } = {}) {
+// logo: true prints a small blue "AB" on the white centre, the way makers print
+// theirs (splash only; the app and case videos leave it off).
+export function createView(canvas, { width, height, camera = [5.6, 5.0, 7.2], fov = 28, target = [0, 0.15, 0], logo = false } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(1);
   renderer.setSize(width, height, false);
@@ -40,8 +42,19 @@ export function createView(canvas, { width, height, camera = [5.6, 5.0, 7.2], fo
   const mats = Object.fromEntries(Object.entries(COLOURS).map(([k, c]) => [k, new THREE.MeshStandardMaterial({ color: c, roughness: 0.55, metalness: 0.0, emissive: c, emissiveIntensity: 0.1 })]));
   const root = new THREE.Group();
   scene.add(root);
+  let logoMat = null;
+  if (logo) {
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const g = c.getContext('2d');
+    g.strokeStyle = '#1d4ed8'; g.lineWidth = 12; g.beginPath(); g.arc(128, 128, 108, 0, Math.PI * 2); g.stroke();
+    g.fillStyle = '#1d4ed8'; g.font = '800 112px -apple-system, Helvetica, Arial'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText('AB', 128, 136);
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+    logoMat = new THREE.MeshStandardMaterial({ map: tex, transparent: true, roughness: 0.55 });
+  }
+  const logoGeo = new THREE.PlaneGeometry(0.66, 0.66);
 
-  function cubieMesh(q, keep) {
+  function cubieMesh(q, keep, logoTurns) {
     const g = new THREE.Group();
     g.add(new THREE.Mesh(body, bodyMat));
     for (const s of q.stickers) {
@@ -49,6 +62,13 @@ export function createView(canvas, { width, height, camera = [5.6, 5.0, 7.2], fo
       const n = new THREE.Vector3(...s.n);
       m.position.copy(n.clone().multiplyScalar(0.487));
       m.lookAt(n.clone().multiplyScalar(2));
+      if (logoMat && s.c === 'W' && q.stickers.length === 1) {
+        // The engine keeps no centre orientation, so the caller passes the net clockwise
+        // quarter turns of that face to keep the print from snapping back.
+        const d = new THREE.Mesh(logoGeo, logoMat);
+        d.position.z = 0.002; d.rotation.z = -logoTurns * Math.PI / 2; // clockwise seen from outside
+        m.add(d);
+      }
       g.add(m);
     }
     g.position.set(...q.pos);
@@ -60,7 +80,7 @@ export function createView(canvas, { width, height, camera = [5.6, 5.0, 7.2], fo
   // orbit [tilt, spin]: spin about the vertical axis, then tilt about the
   // screen's horizontal axis, so a drag moves the cube the way the hand does.
   const right = new THREE.Vector3().subVectors(cam.position, new THREE.Vector3(...target)).cross(new THREE.Vector3(0, 1, 0)).normalize().negate();
-  function draw(cube, { turn = null, rotation = [0, 0, 0], orbit = null, scale = 1, keep = null } = {}) {
+  function draw(cube, { turn = null, rotation = [0, 0, 0], orbit = null, scale = 1, keep = null, logoTurns = 0 } = {}) {
     root.clear();
     if (orbit) root.quaternion.setFromAxisAngle(right, orbit[0]).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), orbit[1]));
     else root.rotation.set(...rotation);
@@ -74,7 +94,7 @@ export function createView(canvas, { width, height, camera = [5.6, 5.0, 7.2], fo
       const v = [0, 0, 0]; v[AX[axis]] = 1;
       spin.setRotationFromAxisAngle(new THREE.Vector3(...v), sign * turn.angle);
     }
-    for (const q of cube) (sel(q) ? spin : root).add(cubieMesh(q, keep));
+    for (const q of cube) (sel(q) ? spin : root).add(cubieMesh(q, keep, logoTurns));
     renderer.render(scene, cam);
     return canvas;
   }

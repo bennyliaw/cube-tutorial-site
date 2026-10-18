@@ -14,7 +14,13 @@ const $ = (id) => document.getElementById(id);
 const canvas = $('gl');
 const dpr = Math.min(window.devicePixelRatio || 1, 2);
 const view = createView(canvas, { width: 800, height: 600 });
-function fit() { view.resize(Math.round(canvas.clientWidth * dpr), Math.round(canvas.clientHeight * dpr)); }
+// A tall canvas (tablet or phone held upright) widens the vertical field of
+// view so the cube still fits side to side.
+function fit() {
+  view.resize(Math.round(canvas.clientWidth * dpr), Math.round(canvas.clientHeight * dpr));
+  view.camera.fov = 2 * Math.atan(Math.tan((28 / 2) * Math.PI / 180) / Math.min(1, view.camera.aspect)) * 180 / Math.PI;
+  view.camera.updateProjectionMatrix();
+}
 window.addEventListener('resize', fit);
 
 // Cubers' convention: whole-cube turns (x y z) are not counted as moves.

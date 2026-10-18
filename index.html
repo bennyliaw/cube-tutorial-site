@@ -1,6 +1,7 @@
 <!doctype html>
 <!-- Landing: the splash plays, Skip appears after 5 s and jumps to the last
-     2 s (the finale), then the app opens. -->
+     2 s (the finale), then the app opens. Browsers only autoplay muted video,
+     so the music needs a tap on Sound. -->
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CFOP · the easy way</title>
 <style>
@@ -9,12 +10,16 @@ video { width: 100%; height: 100%; object-fit: contain; display: block; }
 #skip { position: fixed; right: 20px; bottom: 20px; font: 600 15px -apple-system, Helvetica, Arial, sans-serif; color: #FFD60A;
   background: #070b18cc; border: 1px solid #FFD60A88; border-radius: 10px; padding: 10px 16px; cursor: pointer; opacity: 0; transition: opacity .4s; pointer-events: none; }
 #skip.on { opacity: 1; pointer-events: auto; }
+#snd { position: fixed; left: 20px; bottom: 20px; font: 600 15px -apple-system, Helvetica, Arial, sans-serif; color: #9CC3FF;
+  background: #070b18cc; border: 1px solid #9CC3FF88; border-radius: 10px; padding: 10px 16px; cursor: pointer; }
 </style></head><body>
 <video id="v" src="dist/splash.mp4" autoplay muted playsinline></video>
-<button id="skip">Skip ›</button>
+<button id="snd">🔇 Sound</button><button id="skip">Skip ›</button>
 <script>
 const v = document.getElementById('v'), skip = document.getElementById('skip');
 const enter = () => { location.href = 'app/'; };
+const snd = document.getElementById('snd');
+snd.onclick = () => { v.muted = !v.muted; snd.textContent = v.muted ? '🔇 Sound' : '🔊 Sound'; };
 setTimeout(() => skip.classList.add('on'), 5000);
 skip.onclick = () => { skip.classList.remove('on'); if (v.duration > 3 && v.currentTime < v.duration - 2) v.currentTime = v.duration - 2; v.play(); setTimeout(enter, 3000); }; // fail-safe if the server can't seek
 v.addEventListener('ended', () => setTimeout(enter, 600));
