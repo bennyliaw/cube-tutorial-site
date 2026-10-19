@@ -26,11 +26,12 @@ window.addEventListener('resize', fit);
 // Cubers' convention: whole-cube turns (x y z) are not counted as moves.
 const isTurn = (mv) => !'xyz'.includes(mv.m);
 let sound = localStorage.getItem('sound') !== 'off', lastClack = -1;
+let boost = 1; // the scramble plays 4x: it is not the lesson
 let solving = false, keep = null, tl = null, n = 0, playing = false, speed = 1, rot = [0, 0], scrambled = solved();
 const STAGE_NAMES = { cross: 'Cross', f2l: 'F2L', oll: 'OLL', pll: 'PLL' };
 
 function load(start, segments, autoplay = true, focus = null, isSolve = false) {
-  keep = focus; solving = isSolve; lastClack = -1;
+  keep = focus; solving = isSolve; lastClack = -1; boost = 1; lastSeg = -1; // redraw the info text
   tl = buildTimeline(start, segments, { intro: 20, outro: 20 });
   n = 0; playing = autoplay;
   $('scrub').max = tl.total;
@@ -47,8 +48,8 @@ function showCases() {
   $('tabCases').classList.add('on'); $('tabSolve').classList.remove('on');
   const groups = {};
   for (const k of CASES) (groups[caseLabel(k)] ||= []).push(k);
-  $('side').innerHTML = Object.entries(groups).map(([g, ks]) => `<h3>${g}</h3>` + ks.map((k) =>
-    `<div class="item" data-id="${k.id}">${k.name}<small>${k.hold_text}</small><span class="mv">${k.moves}</span></div>`).join('')).join('');
+  $('side').innerHTML = '<div class="list">' + Object.entries(groups).map(([g, ks]) => `<h3>${g}</h3>` + ks.map((k) =>
+    `<div class="item" data-id="${k.id}">${k.name}<small>${k.hold_text}</small><span class="mv">${k.moves}</span></div>`).join('')).join('') + '</div>';
   $('side').querySelectorAll('.item').forEach((el) => el.onclick = () => playCase(el.dataset.id));
 }
 function playCase(id) {
@@ -73,11 +74,11 @@ function randomScramble(len = 22) {
 }
 function showSolve() {
   $('tabSolve').classList.add('on'); $('tabCases').classList.remove('on');
-  $('side').innerHTML = `<h3>Scramble</h3>
+  $('side').innerHTML = `<div id="scrbox"><h3>Scramble</h3>
     <textarea id="scr" spellcheck="false" placeholder="e.g. R U F2 D' L ...">${localStorage.getItem('scramble') || randomScramble()}</textarea>
     <div class="row"><button id="rand">Random</button><button id="apply">Show scramble</button><button id="go" class="on">Solve it</button></div>
     <div class="hint">Type the moves you used to scramble your cube (hold yellow up, green front), or press Random.</div>
-    <div id="msg"></div><div id="steps"></div>`;
+    <div id="msg"></div></div><div id="steps"></div>`;
   $('rand').onclick = () => { $('scr').value = randomScramble(); showScramble(); };
   $('apply').onclick = showScramble;
   $('go').onclick = runSolve;
@@ -95,7 +96,7 @@ function showScramble() {
     const s = readScramble();
     scrambled = apply(solved(), s);
     load(solved(), [{ moves: s, stage: 'Scramble', title: 'Scrambling', say: 'From solved, these moves mix the cube up.' }], true);
-    tl.segs[0].pauseAfter = 0;
+    tl.segs[0].pauseAfter = 0; boost = 4;
     $('msg').innerHTML = ''; $('steps').innerHTML = '';
   } catch (e) { $('msg').innerHTML = `<p class="err">${e.message}</p>`; }
 }
@@ -152,7 +153,7 @@ let lastT = performance.now(), lastSeg = -1, lastMove = -1;
 function frame(t) {
   const dt = Math.min(0.1, (t - lastT) / 1000); lastT = t;
   if (tl) {
-    if (playing) { n += dt * 30 * speed; if (n >= tl.total) { n = tl.total; playing = false; $('play').textContent = '▶'; } }
+    if (playing) { n += dt * 30 * speed * boost; if (n >= tl.total) { n = tl.total; playing = false; $('play').textContent = '▶'; } }
     const { cube, turn, move, seg } = tl.at(n);
     if (playing && turn && move !== lastClack) { lastClack = move; if (sound) clack(); }
     view.draw(cube, { turn, orbit: rot, scale: 0.72, keep });

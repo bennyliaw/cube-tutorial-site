@@ -51,7 +51,12 @@ textarea { width: 100%; height: 64px; font: 13px "SF Mono", Menlo, monospace; co
   header .tabs button { flex: 1; }
   main { order: 1; height: 55vh; height: 55svh; flex: none; }
   footer { order: 2; padding: 8px 12px 10px; }
-  aside { order: 3; border-right: none; border-top: 1px solid var(--line); overflow: visible; }
+  /* The aside's parts join the page flow: the scramble box goes above the
+     cube, the case list and solve steps below the controls. */
+  aside { display: contents; }
+  #scrbox { order: 0; padding: 4px 12px 0; }
+  #scrbox textarea { height: 52px; }
+  .list, #steps { order: 3; padding: 0 12px 12px; border-top: 1px solid var(--line); }
   button, select { min-height: 44px; min-width: 44px; }
   .item { padding: 11px 10px; }
   #info { left: 12px; right: 12px; top: 10px; }
