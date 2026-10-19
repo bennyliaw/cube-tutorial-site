@@ -24,14 +24,14 @@ export const B_STAGES = [
   { id: 'b-corners', n: 2, title: 'White corners', hold: 'Turn it upside down: white on the bottom, same face towards you', sub: 'corner above its slot, then sexy until it drops in',
     steps: [
       'Find a top corner with white. Its other two colours say where it goes: turn the top until it sits right above that spot.',
-      'Right side: sexy, again and again until the corner is in (never more than 5). Left side: left sexy.',
+      'Corner going to the right: sexy, again and again until it drops in. Going to the left: left sexy. Never more than 5 times.',
       'Corner stuck in the bottom, wrong way round: do sexy once to bring it up, then as above.',
     ] },
   { id: 'b-middle', n: 3, title: 'Middle layer', hold: 'Yellow on top', sub: 'top edge with no yellow; match its front colour to the centre',
     steps: [
       'Turn the top until the edge\'s front colour matches the centre below it. Its top colour says left or right.',
       'Going right: top away to the left (U), sexy. Turn the whole cube so the right side faces you (y), left sexy, turn it back. Going left: the mirror.',
-      'Edge stuck in the middle, wrong way round: put any top edge into its place to pop it out.',
+      'Edge already in its spot but the wrong way round: put any top edge into that spot (same moves as below). That pops the stuck edge up to the top; then match it and insert it as usual.',
     ] },
   { id: 'b-ycross', n: 4, title: 'Yellow cross', hold: 'Yellow on top', sub: 'edges only; corners ignored (grey)',
     steps: ['F · sexy · F\' each time. Dot gives an L; L (held at the back-left) gives a line; line (held left to right) gives the cross.'] },
@@ -61,14 +61,13 @@ export const B_CASES = [
   { id: 'b-cross-flip', stage: 'b-cross', hold: 'z2', name: 'Edge on top, flipped', hold_text: 'White edge in the top front, white facing you', cue: 'F out to the side · top back · R up · top again', moves: "F U' R U", focus: 'cross', expect: { kind: 'cross-edge-flipped' } },
 
   // 2 · White corners (white on the bottom)
-  { id: 'b-corner-right', stage: 'b-corners', name: 'White facing right', hold_text: 'Corner above its slot at the front-right', cue: 'sexy once', moves: sexy, focus: 'corner', expect: { kind: 'corner', white: 'R', sexies: 1 } },
-  { id: 'b-corner-up', stage: 'b-corners', name: 'White facing up', hold_text: 'Corner above its slot at the front-right', cue: 'sexy 3 times', moves: `(${sexy})3`, focus: 'corner', expect: { kind: 'corner', white: 'U', sexies: 3 } },
-  { id: 'b-corner-front', stage: 'b-corners', name: 'White facing you', hold_text: 'Corner above its slot at the front-right', cue: 'sexy 5 times', moves: `(${sexy})5`, focus: 'corner', expect: { kind: 'corner', white: 'F', sexies: 5 } },
-  { id: 'b-corner-left', stage: 'b-corners', side: 'left', name: 'Left side: white facing left', hold_text: 'Corner above its slot at the front-left', cue: 'left sexy once (the mirror: 3 for up, 5 for facing you)', moves: "L' U' L U", focus: 'corner', expect: { kind: 'corner', white: 'L', sexies: 1, left: true } },
+  { id: 'b-corner-right', stage: 'b-corners', name: 'Right side', hold_text: 'Corner above its slot at the front-right (here white faces right)', cue: 'sexy again and again until it drops in: 1 time here (white up: 3, white facing you: 5)', moves: sexy, focus: 'corner', expect: { kind: 'corner', white: 'R', sexies: 1 } },
+  { id: 'b-corner-left', stage: 'b-corners', side: 'left', name: 'Left side', hold_text: 'Corner above its slot at the front-left (here white faces left)', cue: 'left sexy again and again until it drops in: 1 time here (white up: 3, white facing you: 5)', moves: "L' U' L U", focus: 'corner', expect: { kind: 'corner', white: 'L', sexies: 1, left: true } },
 
   // 3 · Middle layer (yellow on top)
   { id: 'b-mid-right', stage: 'b-middle', name: 'Edge goes right', hold_text: 'Front colour matches the centre; top colour is the right centre', cue: 'U away · sexy · turn the cube (right side to you) · left sexy · turn back', moves: "U · R U R' U' · y · L' U' L U · y'", focus: 'middle', expect: { kind: 'middle', to: 'R' } },
   { id: 'b-mid-left', stage: 'b-middle', side: 'left', name: 'Edge goes left', hold_text: 'Front colour matches the centre; top colour is the left centre', cue: "U' away · left sexy · turn the cube (left side to you) · sexy · turn back", moves: "U' · L' U' L U · y' · R U R' U' · y", focus: 'middle', expect: { kind: 'middle', to: 'L' } },
+  { id: 'b-mid-flipped', stage: 'b-middle', name: 'Edge in its spot, flipped', hold_text: 'Front-right edge in place but its colours are swapped', alg: "R U R' U' · y · L' U' L U · y'", cue: 'pop it out (sexy · turn · left sexy · turn back), then U to match it and "Edge goes right"', moves: "R U R' U' · y · L' U' L U · y' · U · U · R U R' U' · y · L' U' L U · y'", focus: 'middle', expect: { kind: 'middle-flipped' } },
 
   // 4 · Yellow cross
   { id: 'b-ycross-dot', stage: 'b-ycross', name: 'Dot', hold_text: 'No yellow edges up', alg: "F R U R' U' F'", cue: 'you get an L: turn the top to put it at the back-left, next card', moves: "F R U R' U' F' · U2 · F R U R' U' F' · F R U R' U' F'", focus: 'yedges', expect: { kind: 'ycross', shape: 'dot', passes: 3 } },

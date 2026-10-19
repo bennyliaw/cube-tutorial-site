@@ -6,8 +6,9 @@ import { fromAlg, apply, facelets, normalize, invert, solved } from './cube.js';
 export const PALETTE = {
   dark: { Y: '#FFD60A', W: '#F5F7FA', G: '#16C172', B: '#3A7BFF', O: '#FF8A1F', R: '#F0334B', dim: '#2A3350', line: '#0A0F1E', arrow: '#FFFFFF' },
   print: { Y: '#FFD000', W: '#FFFFFF', G: '#109A57', B: '#1F5FE0', O: '#F27A0F', R: '#D9233A', dim: '#D3D8E2', line: '#1A1F2B', arrow: '#111111' },
-  // Beginner print sheet: darker "don't care" grey so the white cross shows.
-  printb: { Y: '#FFD000', W: '#FFFFFF', G: '#109A57', B: '#1F5FE0', O: '#F27A0F', R: '#D9233A', dim: '#9AA3B5', line: '#1A1F2B', arrow: '#111111' },
+  // Beginner print sheet: light grey "don't care" stickers and grey outlines,
+  // to save ink (Ben, 19 Oct); the outlines keep white stickers visible.
+  printb: { Y: '#FFD000', W: '#FFFFFF', G: '#109A57', B: '#1F5FE0', O: '#F27A0F', R: '#D9233A', dim: '#E2E5EB', line: '#8F97A6', arrow: '#111111' },
 };
 
 // Case state: what the cube looks like before the algorithm (plus a final
